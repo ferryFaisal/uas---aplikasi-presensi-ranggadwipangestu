@@ -207,7 +207,7 @@ if ($_SESSION['role'] == "Admin") {
                     </div>
                     <?php }
 require 'connect_db.php';
-$sql3 = "SELECT * FROM products";
+$sql3 = "SELECT * FROM mahasiswa";
 $result3 = mysqli_query($conn, $sql3);
 $cek3 = mysqli_num_rows($result3);
 
