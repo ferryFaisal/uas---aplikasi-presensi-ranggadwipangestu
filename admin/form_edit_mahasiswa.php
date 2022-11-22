@@ -1,5 +1,5 @@
 <?php
-require 'connect_db.php';
+require "connect_db.php";
 session_start();
 ob_start();
 if (isset($_SESSION['login'])) { //jika sudah login
@@ -11,68 +11,69 @@ if (isset($_SESSION['login'])) { //jika sudah login
     //session belum ada artinya belum login
     die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
 }
-$email = $_GET['email'];
-$attrAdmin = $attrSales = $attrEditor = "";
-$nameErr = $roleErr = $passwordErr = $imageErr = "";
-$valid_name = $valid_role = $valid_password = $valid_image = false;
+// define variables and set to empty values
+$namaErr = $nimErr = $classErr = "";
+$nama = $nim = $class = "";
+$valid_nama = $valid_nim = $valid_class = false;
 
-$sql = "SELECT * FROM customers WHERE email = '$email'";
+$sql = "SELECT * FROM mahasiswa WHERE nim = '$_GET[nim]'";
 $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
     while ($row = mysqli_fetch_assoc($result)) {
+        switch ($row['kelas']) {
+            case "5A":
+                $attrKelas = "selected";
+                break;
+            case "5B":
+                $attrKelas = "selected";
+                break;
+        }
+        $nim = $row['nim'];
+        $nama = $row['nama'];
+        $class = $row['kelas'];
+    }
+}
 
-        $fname = $row['firstname'];
-        $lname = $row['lastname'];
-        $password = $row['password'];
-        $email = $row['email'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // nim section
+    if (empty($_POST["nim"])) {
+        $nimErr = "NIM is required";
+        $valid_nim = false;
+    } else {
+        $nim1 = test_input($_POST["nim"]);
+        $valid_nim = true;
     }
 
-    //end of switch
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (empty($_POST["fname"])) {
-            $nameErr = "Name is required";
-            $valid_fname = false;
-        } else {
-            $name = trim($_POST["fname"]);
-            $valid_fname = true;
-
-            // check if name only contains letters and whitespace
-            if (!preg_match("/^[a-zA-Z-' ]*$/", $name)) {
-                $nameErr = "Only letters and white space allowed";
-
-            }
-        }
-        if (empty($_POST["lname"])) {
-            $nameErr = "Name is required";
-
-        } else {
-            $lastname = trim($_POST["lname"]);
-
-            // check if name only contains letters and whitespace
-
-        }
-
-        if (empty($_POST["password"])) {
-            $passwordErr = "Password is required";
-            $valid_password = false;
-            $valid_passwordrepeat = false;
-        } else {
-            $password = trim($_POST["password"]);
-            $valid_password = true;
-        }
-
-        if (empty($_POST["role"])) {
-            $roleErr = "role is required";
-            $valid_role = false;
-
-        } else {
-            $role = trim($_POST["role"]);
-            $valid_role = true;
-        }
+    //name section
+    if (empty($_POST["nama"])) {
+        $namaErr = "Name is Required";
+        $valid_nama = false;
+    } else {
+        $nama1 = test_input($_POST["nama"]);
+        $valid_nama = true;
 
     }
-    ?>
+    //class section
+    if (empty($_POST["kelas"])) {
+        $classErr = "Class is required";
+        $valid_class = false;
+    } else {
+        $class1 = test_input($_POST["kelas"]);
+        $valid_class = true;
+    }
+
+}
+
+function test_input($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -84,7 +85,7 @@ if (mysqli_num_rows($result) > 0) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin Panel - Table Users</title>
+    <title>Admin Panel - Table Mahasiswa</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -102,7 +103,7 @@ if (mysqli_num_rows($result) > 0) {
 
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-        <a class="navbar-brand mr-1" href="index.php">Start Bootstrap</a>
+        <a class="navbar-brand mr-1" href="index.php">PRESENSI MAHASISWA TEKNIK INFORMATIKA</a>
 
         <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
             <i class="fas fa-bars"></i>
@@ -111,7 +112,7 @@ if (mysqli_num_rows($result) > 0) {
         <!-- Navbar Search -->
         <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for..." aria-label="Search"
+                <input type="text" class="form-control" placeholder="Cari..." aria-label="Search"
                     aria-describedby="basic-addon2">
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="button">
@@ -128,14 +129,14 @@ if (mysqli_num_rows($result) > 0) {
                     aria-haspopup="true" aria-expanded="false">
                     <?php
 require 'connect_db.php';
-    $sql2 = "SELECT * FROM user where email= '$_SESSION[login]'";
-    $result2 = mysqli_query($conn, $sql2);
-    $cek2 = mysqli_num_rows($result2);
+$sql2 = "SELECT * FROM user where email= '$_SESSION[login]'";
+$result2 = mysqli_query($conn, $sql2);
+$cek2 = mysqli_num_rows($result2);
 
-    if ($cek2 > 0) {
-        $row2 = mysqli_fetch_assoc($result2);
+if ($cek2 > 0) {
+    $row2 = mysqli_fetch_assoc($result2);
 
-        ?>
+    ?>
                     <img src="photo_user/<?php echo $row2['photo'] ?>" alt="" width="32" height="32"
                         class="rounded-circle me-2">
 
@@ -148,7 +149,7 @@ require 'connect_db.php';
                         </a>
                         <?php
 }
-    ?>
+?>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
                     </div>
@@ -167,28 +168,28 @@ require 'connect_db.php';
                     <span>Dashboard</span>
                 </a>
             </li>
-
             <?php
 if ($_SESSION['role'] == "Admin") {
 
-        ?>
-            <li class="nav-item">
+    ?>
+            <li class="nav-item ">
                 <a class="nav-link" href="tables.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Table Users</span></a>
                 <?php
 }
-    ?>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="tables-product.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Table Products</span></a>
+?>
             </li>
             <li class="nav-item active">
+                <a class="nav-link" href="tables-mahasiswa.php">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Table Mahasiswa</span></a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link" href="tables-customer.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Customers</span></a>
+                    <span>Table Presensi</span></a>
             </li>
 
         </ul>
@@ -203,47 +204,72 @@ if ($_SESSION['role'] == "Admin") {
                         <a href="#">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item active">Tables</li>
+
                 </ol>
 
+
                 <!-- DataTables Example -->
-                <form method="post" ENCTYPE="multipart/form-data">
+                <main>
+                    <div class="card mb-3">
 
-                    First Name: <input type="text" name="fname" value="<?php echo $fname; ?>">
-                    <span class="error">* <?php echo $nameErr; ?></span>
-                    <br><br>
-                    Last Name: <input type="text" name="lname" value="<?php echo $lname; ?>">
-                    <span class="error">* <?php echo $nameErr; ?></span>
-                    <br><br>
-                    Password: <input type="password" name="password" value="<?php echo $password; ?>">
-                    <span class="error">* <?php echo $passwordErr; ?></span>
-                    <br><br>
-                    <input type="hidden" name="email" value="<?php echo $email; ?>">
-                    <input type="submit" name="submit" value="Update">
-                </form>
-            </div>
-        </div>
-    </div>
-    <?php
-}
+                        <div class="card-header">
+                            <i class="fas fa-table"></i>
+                            Add Products
+                        </div>
+                        <div class="card-body">
 
-if ($valid_fname && $valid_password == true) {
-    include 'edit_data_customer.php';
+                            <p><span class="error">* required field</span></p>
+                            <form method="post" ENCTYPE="multipart/form-data">
+
+                                NIM : <input type="number" min="1" step="any" name="nim" value="<?php echo $nim; ?>"
+                                    disabled>
+                                <span class="error">* <?php echo $nimErr; ?></span>
+                                <br><br>
+                                Nama : <input type="text" name="nama" value="<?php echo $nama; ?>">
+                                <span class="error">* <?php echo $namaErr; ?></span>
+                                <br><br>
+
+                                <select class="form-select" aria-label="Default select example" name="kelas"
+                                    required="required">
+                                    <option selected>Pilih Kelas</option>
+                                    <option value="5A" <?php echo $attrKelas; ?>>5A</option>
+                                    <option value="5B" <?php echo $attrKelas; ?>>5B</option>
+
+                                </select>
+                                <span class="error">* <?php echo $classErr; ?></span>
+                                <br><br>
+                                <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+
+                            </form>
+
+
+                            <?php
+if ($valid_nim && $valid_nama && $valid_class == true) {
+
+    include 'edit_data_mahasiswa.php';
+
 }
 ?>
-
-
-    <footer class="sticky-footer">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>Copyright © Rangga</span>
+                        </div>
+                    </div>
             </div>
+            </main>
+
+            <!-- Sticky Footer -->
+            <footer class="sticky-footer">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright © Rangga </span>
+                    </div>
+                </div>
+            </footer>
         </div>
-    </footer>
-    </div>
-    <!-- /.container-fluid -->
-    <!-- /#wrapper -->
+        <!-- /.container-fluid -->
     </div>
     <!-- /.content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>

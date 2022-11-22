@@ -10,98 +10,8 @@ if (isset($_SESSION['login'])) { //jika sudah login
     //session belum ada artinya belum login
     die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
 }
-ob_start();
-$nameErr = $emailErr = $roleErr = $passwordErr = $repeatpasswordErr = $imageErr = "";
-// $name = $email = $role = $password = $repeatpassword = "";
-$valid_fname = $valid_lname = $valid_email = $valid_role = $valid_password = $valid_passwordrepeat = $valid_image = false;
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if (empty($_POST["name"])) {
-        $nameErr = "Name is required";
-        $valid_fname = false;
-    } else {
-        $name = test_input($_POST["name"]);
-        $valid_fname = true;
-
-        // check if name only contains letters and whitespace
-        if (!preg_match("/^[a-zA-Z-' ]*$/", $name)) {
-            $nameErr = "Only letters and white space allowed";
-
-        }
-    }
-
-    if (empty($_POST["lname"])) {
-
-    } else {
-        $lname = test_input($_POST["lname"]);
-
-    }
-
-    if (empty($_POST["email"])) {
-
-        $emailErr = "Email is required";
-        $valid_email = false;
-
-    } else {
-        $email = test_input($_POST["email"]);
-        $valid_email = true;
-        // check if e-mail address is well-formed
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-            $valid_email = false;
-
-        } else {
-            require 'connect_db.php';
-
-            $sql = 'SELECT email FROM customers';
-            $result = mysqli_query($conn, $sql);
-            if (mysqli_num_rows($result) > 0) {
-                // output data of each row
-                while ($row = mysqli_fetch_assoc($result)) {
-                    if ($row['email'] == $email) {
-                        $emailErr = "Email already exist!";
-                        $valid_email = false;
-                        break;
-                    } else {
-
-                        $valid_email = true;
-                    }
-                }
-            } else {
-                echo "0 result!";
-            }
-            mysqli_close($conn);
-        }
-    }
-
-    if (empty($_POST["password"])) {
-        $passwordErr = "Password is required";
-        $valid_password = false;
-        $valid_passwordrepeat = false;
-    } else {
-        $password = test_input($_POST["password"]);
-        if ($_POST['password'] == $_POST['repeatpassword']) {
-
-            $valid_password = true;
-            $valid_passwordrepeat = true;
-        } else {
-            $repeatpasswordErr = "Password must same";
-            $repeatpassword = test_input($_POST["repeatpassword"]);
-        }
-
-    }
-
-}
-
-function test_input($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
-
+$sql = "SELECT * FROM mahasiswa";
+$result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,7 +24,7 @@ function test_input($data)
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin Panel - Table Products</title>
+    <title>Admin Panel - Table Product</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -197,6 +107,7 @@ if ($cek2 > 0) {
                     <span>Dashboard</span>
                 </a>
             </li>
+
             <?php
 if ($_SESSION['role'] == "Admin") {
 
@@ -206,19 +117,18 @@ if ($_SESSION['role'] == "Admin") {
                     <i class="fas fa-fw fa-table"></i>
                     <span>Table Users</span></a>
             </li>
-
             <?php
 }
 ?>
             <li class="nav-item active">
-                <a class="nav-link" href="tables-product.php">
+                <a class="nav-link" href="tables-mahasiswa.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Products</span></a>
+                    <span>Table Mahasiswa</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="tables-customer.php">
+                <a class="nav-link" href="tables-presensi.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Customers</span></a>
+                    <span>Table Presensi</span></a>
             </li>
 
         </ul>
@@ -233,67 +143,113 @@ if ($_SESSION['role'] == "Admin") {
                         <a href="#">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item active">Tables</li>
-
+                </ol>
+                <ol>
+                    <a href="form_upload.php"><button type="button" class="btn btn-primary">Add
+                            Mahasiswa</button></a>
                 </ol>
 
-
                 <!-- DataTables Example -->
-                <main>
-                    <div class="card mb-3">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                        Data Table Mahasiswa
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>NIM</th>
+                                        <th>Nama</th>
+                                        <th>Kelas</th>
+                                        <!-- <th>Photo</th>
+                                        <th>Stock</th>
+                                        <th>Date Created</th>
+                                        <th>Date Modified</th>-->
 
-                        <div class="card-header">
-                            <i class="fas fa-table"></i>
-                            Add Products
-                        </div>
-                        <div class="card-body">
+                                        <th>Action</th>
 
-                            <p><span class="error">* required field</span></p>
-                            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
-                                ENCTYPE="multipart/form-data">
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>NIM</th>
+                                        <th>Nama</th>
+                                        <th>Kelas</th>
+                                        <!-- <th>Photo</th>
+                                        <th>Stock</th>
+                                        <th>Date Created</th>
+                                        <th>Date Modified</th>-->
 
-                                First Name : <input type="text" name="name">
-                                <span class="error">* <?php echo $nameErr; ?></span>
-                                <br><br>
-                                Last Name : <input type="text" name="lname">
+                                        <th>Action</th>
+                                    </tr>
+                                </tfoot>
 
-                                <br><br>
-                                Email : <input type="text" name="email">
-                                <span class="error">* <?php echo $emailErr; ?></span>
-                                <br><br>
-                                <span>Password</span>
-                                <input type="password" name="password">
-                                <span>* <?php echo $passwordErr ?></span>
-                                <br><br>
-                                <span>Confirm Password</span>
-                                <input type="password" name="repeatpassword">
-                                <span>* <?php echo $repeatpasswordErr ?></span>
-                                <br><br>
-                                <input type="submit" name="submit" value="Submit" class="btn btn-primary">
-                            </form>
+                                <tbody>
+                                    <?php
+if (mysqli_num_rows($result) > 0) {
+    // output data of each row
+    while ($row = mysqli_fetch_assoc($result)) {
+        ?>
+
+                                    <tr>
+                                        <td><?php echo $row['nim'] ?></td>
+                                        <td><?php echo $row['nama'] ?></td>
+                                        <td><?php echo $row['kelas'] ?></td>
 
 
+
+                                        <td>
+                                            <a href='form_edit_mahasiswa.php?nim=<?php echo $row['nim'] ?>'><i
+                                                    class="bi bi-pen"></i></a> |
+                                            <a onclick="return confirm ('Are you sure ?')"
+                                                href='delete_data_mahasiswa.php?nim=<?php echo $row['nim'] ?>'><i
+                                                    class="bi bi-trash"></i></a>
+                                        </td>
+
+
+                                    </tr>
+                                    <?php
+} //end of while
+
+    ?>
+
+                                </tbody>
+                            </table>
                             <?php
-if ($valid_fname && $valid_email && $valid_password && $valid_passwordrepeat = true) {
-    include 'upload_data_customer.php';
+
+} else {
+    echo "0 results";
 }
+mysqli_close($conn);
 ?>
                         </div>
-                    </div>
-            </div>
-            </main>
+                        <!-- </div>
+                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                </div> -->
 
-            <!-- Sticky Footer -->
-            <footer class="sticky-footer">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright © Rangga</span>
+
+
                     </div>
+
+
+
+
                 </div>
-            </footer>
+
+                <!-- Sticky Footer -->
+                <footer class="sticky-footer">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>Copyright © Rangga</span>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <!-- /.container-fluid -->
         </div>
-        <!-- /.container-fluid -->
-    </div>
-    <!-- /.content-wrapper -->
+        <!-- /.content-wrapper -->
     </div>
     <!-- /#wrapper -->
 

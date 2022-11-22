@@ -139,14 +139,14 @@ if ($_SESSION['role'] == "Admin") {
 }
 ?>
             <li class="nav-item">
-                <a class="nav-link" href="tables-product.php">
+                <a class="nav-link" href="tables-mahasiswa.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Products</span></a>
+                    <span>Table Mahasiswa</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="tables-customer.php">
+                <a class="nav-link" href="tables-presensi.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Customers</span></a>
+                    <span>Table Presensi</span></a>
             </li>
 
         </ul>
@@ -207,7 +207,7 @@ if ($_SESSION['role'] == "Admin") {
                     </div>
                     <?php }
 require 'connect_db.php';
-$sql3 = "SELECT * FROM products";
+$sql3 = "SELECT * FROM mahasiswa";
 $result3 = mysqli_query($conn, $sql3);
 $cek3 = mysqli_num_rows($result3);
 
@@ -229,11 +229,11 @@ $cek7 = mysqli_num_rows($result7);
                                 <div class="card-body-icon">
                                     <i class="fas fa-fw fa-shopping-cart"></i>
                                 </div>
-                                <div class="mr-5">Table Products</div>
-                                <div class="mr-3">Total Product : <?php echo $cek3 ?></div>
-                                <div class="mr-3">Total Product Today: <?php echo $cek6 ?></div>
+                                <div class="mr-5">Table Mahasiswa</div>
+                                <div class="mr-3">Total Mahasiswa : <?php echo $cek3 ?></div>
+
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="tables-product.php">
+                            <a class="card-footer text-white clearfix small z-1" href="tables-mahasiswa.php">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
                                     <i class="fas fa-angle-right"></i>
@@ -248,11 +248,10 @@ $cek7 = mysqli_num_rows($result7);
                                 <div class="card-body-icon">
                                     <i class="fas fa-fw fa-life-ring"></i>
                                 </div>
-                                <div class="mr-5">Table Customers</div>
-                                <div class="mr-3">Total Customer : <?php echo $cek5 ?></div>
-                                <div class="mr-3">Total New Customer Today: <?php echo $cek7 ?></div>
+                                <div class="mr-5">Table Presensi</div>
+
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="tables-customer.php">
+                            <a class="card-footer text-white clearfix small z-1" href="tables-presensi.php">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
                                     <i class="fas fa-angle-right"></i>
@@ -274,137 +273,8 @@ $cek7 = mysqli_num_rows($result7);
                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                 </div>
 
-                <!-- DataTables Example -->
-                <!-- <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fas fa-table"></i>
-                        Data Table Example
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
-                                    </tr>
-                                </tfoot>
-                                <tbody>
-                                    <tr>
-                                        <td>Tiger Nixon</td>
-                                        <td>System Architect</td>
-                                        <td>Edinburgh</td>
-                                        <td>61</td>
-                                        <td>2011/04/25</td>
-                                        <td>$320,800</td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                </div> -->
 
 
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fas fa-table"></i>
-                        Data Table Products
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Price</th>
-                                        <th>Photo</th>
-                                        <th>Date Created</th>
-                                        <th>Date Modified</th>
-                                        <th>Action</th>
-
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Price</th>
-                                        <th>Photo</th>
-                                        <th>Date Created</th>
-                                        <th>Date Modified</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </tfoot>
-
-                                <tbody>
-                                    <?php
-if (mysqli_num_rows($result1) > 0) {
-    // output data of each row
-    while ($row1 = mysqli_fetch_assoc($result1)) {
-        ?>
-
-                                    <tr>
-                                        <td><?php echo $row1['name'] ?></td>
-                                        <td><?php echo $row1['description'] ?></td>
-                                        <td><?php echo $row1['price'] ?></td>
-                                        <td><img src="images/<?php echo $row1['photo'] ?>" alt="" width="70px"></td>
-                                        <td><?php echo $row1['created'] ?></td>
-                                        <td><?php echo $row1['modified'] ?></td>
-
-
-                                        <td>
-                                            <a href='form_edit_product.php?id=<?php echo $row1['id'] ?>'><i
-                                                    class="bi bi-pen"></i></a> |
-                                            <a onclick="return confirm ('Are you sure ?')"
-                                                href='delete_data_product.php?id=<?php echo $row1['id'] ?>'><i
-                                                    class="bi bi-trash"></i></a>
-                                        </td>
-
-
-                                    </tr>
-                                    <?php
-} //end of while
-
-    ?>
-
-                                </tbody>
-                            </table>
-                            <?php
-
-} else {
-    echo "0 results";
-}
-mysqli_close($conn);
-?>
-                        </div>
-                        <!-- </div>
-                    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-                </div> -->
-
-
-
-                    </div>
-
-
-
-                </div>
             </div>
         </div>
 

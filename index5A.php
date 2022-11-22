@@ -24,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $valid_makul = true;
     }
-
 }
 
 function test_input($data)
@@ -90,10 +89,10 @@ function test_input($data)
                                 Pilih Kelas
                                 &nbsp;
                                 &nbsp;
-                                <a class="btn btn-primary btn-block" href="index5A.php">5A</a>
+                                <a class="btn btn-primary btn-block active" href="index5A.php">5A</a>
                                 &nbsp;
 
-                                <a class="btn btn-primary btn-block active" href="index.php">5B</a>
+                                <a class="btn btn-primary btn-block " href="index.php">5B</a>
 
                             </div>
                         </div>
@@ -107,7 +106,7 @@ function test_input($data)
                     <hr>
                     <?php
 
-$sql = "select * from mahasiswa where kelas = '5B'";
+$sql = "select * from mahasiswa where kelas = '5A'";
 $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
@@ -145,7 +144,7 @@ if (mysqli_num_rows($result) > 0) {
 if ($valid_makul == true) {
     $makul = $_POST['makul'];
     $nama = $_POST['nama'];
-    $kelas = '5B';
+    $kelas = '5A';
     $nim = $_POST['nim'];
     $presensi = $_POST['presensi'];
 

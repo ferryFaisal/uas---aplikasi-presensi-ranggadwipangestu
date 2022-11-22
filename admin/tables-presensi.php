@@ -10,7 +10,7 @@ if (isset($_SESSION['login'])) { //jika sudah login
     //session belum ada artinya belum login
     die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
 }
-$sql = "SELECT * FROM customers";
+$sql = "SELECT * FROM presensi";
 $result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
@@ -121,14 +121,14 @@ if ($_SESSION['role'] == "Admin") {
 }
 ?>
             <li class="nav-item">
-                <a class="nav-link" href="tables-product.php">
+                <a class="nav-link" href="tables-mahasiswa.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Products</span></a>
+                    <span>Table Mahasiswa</span></a>
             </li>
             <li class="nav-item active">
-                <a class="nav-link" href="tables-customer.php">
+                <a class="nav-link" href="tables-presensi.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Customers</span></a>
+                    <span>Table Presensi</span></a>
             </li>
         </ul>
 
@@ -143,10 +143,7 @@ if ($_SESSION['role'] == "Admin") {
                     </li>
                     <li class="breadcrumb-item active">Tables</li>
                 </ol>
-                <ol>
-                    <a href="form_upload_customer.php"><button type="button" class="btn btn-primary">Add
-                            Customer</button></a>
-                </ol>
+
                 <!-- <ol>
                     <a href="form_upload.php"><button type="button" class="btn btn-primary">Add
                             Products</button></a>
@@ -156,39 +153,42 @@ if ($_SESSION['role'] == "Admin") {
                 <div class="card mb-3">
                     <div class="card-header">
                         <i class="fas fa-table"></i>
-                        Data Table Customers
+                        Data Table Presensi
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                 <thead>
                                     <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Email</th>
+                                        <th>Tanggal Presensi</th>
+                                        <th>Makul</th>
+                                        <th>Kelas</th>
+                                        <th>NIM</th>
+                                        <th>Nama</th>
+                                        <th>Status Presensi</th>
                                         <!-- <th>Photo</th>
                                         <th>Stock</th>
 
                                         <th>Date Modified</th>
 
                                          -->
-                                        <th>Date Created</th>
-                                        <th>Action</th>
+
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Email</th>
+                                        <th>Tanggal Presensi</th>
+                                        <th>Makul</th>
+                                        <th>Kelas</th>
+                                        <th>NIM</th>
+                                        <th>Nama</th>
+                                        <th>Status Presensi</th>
                                         <!-- <th>Photo</th>
                                         <th>Stock</th>
 
                                         <th>Date Modified</th>
 
                                          -->
-                                        <th>Date Created</th>
-                                        <th>Action</th>
                                     </tr>
                                 </tfoot>
 
@@ -200,20 +200,17 @@ if (mysqli_num_rows($result) > 0) {
         ?>
 
                                     <tr>
-                                        <td><?php echo $row['firstname'] ?></td>
-                                        <td><?php echo $row['lastname'] ?></td>
-                                        <td><?php echo $row['email'] ?></td>
-                                        <td><?php echo $row['date_created'] ?></td>
+                                        <td><?php echo $row['tgl_presensi'] ?></td>
+                                        <td><?php echo $row['makul'] ?></td>
+                                        <td><?php echo $row['kelas'] ?></td>
+                                        <td><?php echo $row['nim'] ?></td>
+
+                                        <td><?php echo $row['nama'] ?></td>
+                                        <td><?php echo $row['status_presensi'] ?></td>
 
 
 
-                                        <td>
-                                            <a href='form_edit_customer.php?email=<?php echo $row['email'] ?>'><i
-                                                    class="bi bi-pen"></i></a> |
-                                            <a onclick="return confirm ('Are you sure ?')"
-                                                href='delete_data_customer.php?email=<?php echo $row['email'] ?>'><i
-                                                    class="bi bi-trash"></i></a>
-                                        </td>
+
 
 
                                     </tr>

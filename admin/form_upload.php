@@ -10,68 +10,66 @@ if (isset($_SESSION['login'])) { //jika sudah login
     //session belum ada artinya belum login
     die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
 }
+
 ob_start();
-$nameErr = $descErr = $priceErr = $imageErr = $stockErr = "";
-$name = $desc = $price = "";
-$valid_name = $valid_desc = $valid_price = $valid_image = $valid_stock = false;
+$nameErr = $nimErr = $kelasErr = $imageErr = $stockErr = "";
+
+$valid_name = $valid_nim = $valid_kelas = false;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($_POST["name"])) {
-        $nameErr = "Product name is Required";
+        $nameErr = "Name is Required";
         $valid_name = false;
     } else {
         $name = test_input($_POST["name"]);
         $valid_name = true;
     }
 
-    // descript section
-    if (empty($_POST["desc"])) {
-        $descErr = "Description is required";
-        $valid_desc = false;
+    if (empty($_POST["nim"])) {
+
+        $nimErr = "nim is required";
+        $valid_nim = false;
+
     } else {
-        $desc = test_input($_POST["desc"]);
-        $valid_desc = true;
-    }
+        $nim = test_input($_POST["nim"]);
+        $valid_nim = true;
+        // check if e-mail address is well-formed
+        if (empty($_POST['nim'])) {
 
-    //price section
-    if (empty($_POST["price"])) {
-        $priceErr = "Price is required";
-        $valid_price = false;
-    } else {
-        $price = test_input($_POST["price"]);
-        $valid_price = true;
-    }
-    if (empty($_POST["stock"])) {
-        $stockErr = "stock is required";
-        $valid_stock = false;
-    } else {
-        $stock = test_input($_POST["stock"]);
-        $valid_stock = true;
-    }
+            $valid_nim = false;
 
-    $nama_file = $_FILES['file']['name'];
-    $dir_upload = "images/";
-    $target_file = $dir_upload . basename($_FILES["file"]["name"]);
-
-    // Select file type
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-    // Valid file extensions
-    $extensions_arr = array("jpg", "jpeg", "png", "gif");
-
-    // Check extension
-    if (in_array($imageFileType, $extensions_arr)) {
-        // Upload file
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $dir_upload . $nama_file)) {
-            // Insert record
-
-            $valid_image = true;
         } else {
-            $imageErr = "File photo is required";
-            $valid_image = false;
+            require 'connect_db.php';
+
+            $sql = 'SELECT nim FROM mahasiswa';
+            $result = mysqli_query($conn, $sql);
+            if (mysqli_num_rows($result) > 0) {
+                // output data of each row
+                while ($row = mysqli_fetch_assoc($result)) {
+                    if ($row['nim'] == $nim) {
+                        $nimErr = "nim already exist!";
+                        $valid_nim = false;
+                        break;
+                    } else {
+                        $valid_nim = true;
+                    }
+                }
+            } else {
+                echo "0 result!";
+            }
+            mysqli_close($conn);
         }
+    }
+
+    if (empty($_POST["kelas"])) {
+        $kelasErr = "kelas wajib diisi";
+        $valid_kelas = false;
+
     } else {
-        $imageErr = "File photo is required";
+
+        $kelas = test_input($_POST["kelas"]);
+
+        $valid_kelas = true;
     }
 
 }
@@ -95,7 +93,7 @@ function test_input($data)
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin Panel - Table Products</title>
+    <title>Admin Panel - Table Mahasiswa</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -192,14 +190,14 @@ if ($_SESSION['role'] == "Admin") {
 }
 ?>
             <li class="nav-item active">
-                <a class="nav-link" href="tables-product.php">
+                <a class="nav-link" href="tables-mahasiswa.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Products</span></a>
+                    <span>Table Mahasiswa</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="tables-customer.php">
+                <a class="nav-link" href="tables-presensi.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Customers</span></a>
+                    <span>Table Presensi</span></a>
             </li>
 
         </ul>
@@ -224,7 +222,7 @@ if ($_SESSION['role'] == "Admin") {
 
                         <div class="card-header">
                             <i class="fas fa-table"></i>
-                            Add Products
+                            Add Mahasiswa
                         </div>
                         <div class="card-body">
 
@@ -232,34 +230,30 @@ if ($_SESSION['role'] == "Admin") {
                             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
                                 ENCTYPE="multipart/form-data">
 
-                                Product Name : <input type="text" name="name" value="<?php echo $name; ?>">
+                                NIM: <input type="number" min="1" step="any" name='nim'>
+                                <span class="error">* <?php echo $nimErr; ?></span>
+                                <br><br>
+
+                                Name : <input type="text" name='name'>
+
                                 <span class="error">* <?php echo $nameErr; ?></span>
                                 <br><br>
-                                <label for="textarea">Description:</label>
+                                <select class="form-select" aria-label="Default select example" name="kelas"
+                                    required="required">
+                                    <option value="">Pilih Kelas</option>
+                                    <option value="5A">5A</option>
+                                    <option value="5B">5B</option>
+
+                                </select>
+                                <span class="error">* <?php echo $kelasErr; ?></span>
                                 <br>
-                                <textarea name="desc" id="" cols="40" rows="5" value="<?php echo $desc ?>"></textarea>
-                                <span class="error">* <?php echo $descErr; ?></span>
-                                <br><br>
-
-                                Price: <input type="number" min="1" step="any" name='price'
-                                    value="<?php echo $price ?>">
-                                <span class="error">* <?php echo $priceErr; ?></span>
-                                <br><br>
-
-                                Stock: <input type="number" min="1" step="any" name='stock'
-                                    value="<?php echo $stock ?>">
-                                <span class="error">* <?php echo $stockErr; ?></span>
-                                <br><br>
-
-                                Upload Photo : <input type="file" name="file"><br>
-                                <span class="error">* <?php echo $imageErr; ?></span>
-                                <br><br>
+                                <br>
                                 <input type="submit" name="submit" value="Submit" class="btn btn-primary">
                             </form>
 
 
                             <?php
-if ($valid_name && $valid_desc && $valid_price && $valid_image && $valid_stock == true) {
+if ($valid_name && $valid_nim && $valid_kelas == true) {
 
     include 'upload_data.php';
 }
