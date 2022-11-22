@@ -10,33 +10,28 @@ if (isset($_SESSION['loginfront']) && $_SESSION['rolefront'] == "Dosen") { //jik
     die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
 
 }
-
+$valid_makul = false;
+$makulErr = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $makul = $_POST['makul'];
-    $nama = $_POST['nama'];
-    $kelas = '5B';
-    $nim = $_POST['nim'];
-    $presensi = $_POST['presensi'];
 
-    $count = count($nim);
-    $sql = "INSERT INTO presensi (tgl_presensi,makul,kelas,nama,nim,status_presensi) VALUES ";
-    for ($i = 0; $i < $count; $i++) {
-        $sql .= "(sysdate(),'$makul','$kelas','{$nama[$i]}','$nim[$i]}','$presensi')";
-        $sql .= ",";
-    }
+    if (empty($_POST["makul"])) {
+        $makulErr = "makul wajib diisi";
+        $valid_makul = false;
 
-    $sql = rtrim($sql, ",");
-
-    $insert = $conn->query($sql);
-
-    if (!$insert) {
-        echo "gagal insert : " . $conn->error;
     } else {
-        echo '<script language="javascript">';
-        echo 'alert("data berhasil masuk")';
-        echo '</script>';
-    }
 
+        $makul = test_input($_POST["makul"]);
+
+        $valid_makul = true;
+    }
+}
+
+function test_input($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
 }
 ?>
 
@@ -80,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <option value="WebProgLab"> Praktik Pemrograman Web </option>
                                     <option value="SoftDev"> Rekayasa Perangkat Lunak </option>
                                 </select>
+                                <span class="error">* <?php echo $makulErr; ?></span>
                             </div>
                         </div>
 
@@ -93,13 +89,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 Pilih Kelas
                                 &nbsp;
                                 &nbsp;
-
-
-
-                                <a class="btn btn-primary btn-block active" href="index5A.php">5A</a>
+                                <a class="btn btn-primary btn-block" href="index5A.php">5A</a>
                                 &nbsp;
 
-                                <a class="btn btn-primary btn-block " href="index.php">5B</a>
+                                <a class="btn btn-primary btn-block active" href="index.php">5B</a>
 
                             </div>
                         </div>
@@ -148,7 +141,32 @@ if (mysqli_num_rows($result) > 0) {
                     <?php
 }
 }
+if ($valid_makul == true) {
+    $makul = $_POST['makul'];
+    $nama = $_POST['nama'];
+    $kelas = '5A';
+    $nim = $_POST['nim'];
+    $presensi = $_POST['presensi'];
 
+    $count = count($nim);
+    $sql = "INSERT INTO presensi (tgl_presensi,makul,kelas,nama,nim,status_presensi) VALUES ";
+    for ($i = 0; $i < $count; $i++) {
+        $sql .= "(sysdate(),'$makul','$kelas','{$nama[$i]}','$nim[$i]}','$presensi')";
+        $sql .= ",";
+    }
+
+    $sql = rtrim($sql, ",");
+
+    $insert = $conn->query($sql);
+
+    if (!$insert) {
+        echo "gagal insert : " . $conn->error;
+    } else {
+        echo '<script language="javascript">';
+        echo 'alert("data berhasil masuk")';
+        echo '</script>';
+    }
+}
 ?>
                     <p class="text-center">
                         <input type="submit" name="submit" value="Simpan Presensi" class="btn btn-primary btn-block">
