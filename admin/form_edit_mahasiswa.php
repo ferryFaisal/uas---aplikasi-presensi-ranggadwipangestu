@@ -1,6 +1,7 @@
 <?php
-require 'connect_db.php';
+require "connect_db.php";
 session_start();
+ob_start();
 if (isset($_SESSION['login'])) { //jika sudah login
     //menampilkan isi session
     // echo "<h1>Selamat Datang " . $_SESSION['login'] . "</h1>";
@@ -10,86 +11,57 @@ if (isset($_SESSION['login'])) { //jika sudah login
     //session belum ada artinya belum login
     die("Anda belum login! Anda tidak berhak masuk ke halaman ini.Silahkan login <a href='login.php'>di sini</a>");
 }
-ob_start();
-$nameErr = $emailErr = $roleErr = $passwordErr = $repeatpasswordErr = $imageErr = "";
-// $name = $email = $role = $password = $repeatpassword = "";
-$valid_fname = $valid_lname = $valid_email = $valid_role = $valid_password = $valid_passwordrepeat = $valid_image = false;
+// define variables and set to empty values
+$namaErr = $nimErr = $classErr = "";
+$nama = $nim = $class = "";
+$valid_nama = $valid_nim = $valid_class = false;
+
+$sql = "SELECT * FROM mahasiswa WHERE nim = '$_GET[nim]'";
+$result = mysqli_query($conn, $sql);
+if (mysqli_num_rows($result) > 0) {
+    // output data of each row
+    while ($row = mysqli_fetch_assoc($result)) {
+        switch ($row['kelas']) {
+            case "5A":
+                $attrKelas = "selected";
+                break;
+            case "5B":
+                $attrKelas = "selected";
+                break;
+        }
+        $nim = $row['nim'];
+        $nama = $row['nama'];
+        $class = $row['kelas'];
+    }
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    if (empty($_POST["name"])) {
-        $nameErr = "Name is required";
-        $valid_fname = false;
+    // nim section
+    if (empty($_POST["nim"])) {
+        $nimErr = "NIM is required";
+        $valid_nim = false;
     } else {
-        $name = test_input($_POST["name"]);
-        $valid_fname = true;
-
-        // check if name only contains letters and whitespace
-        if (!preg_match("/^[a-zA-Z-' ]*$/", $name)) {
-            $nameErr = "Only letters and white space allowed";
-
-        }
+        $nim1 = test_input($_POST["nim"]);
+        $valid_nim = true;
     }
 
-    if (empty($_POST["lname"])) {
-
+    //name section
+    if (empty($_POST["nama"])) {
+        $namaErr = "Name is Required";
+        $valid_nama = false;
     } else {
-        $lname = test_input($_POST["lname"]);
+        $nama1 = test_input($_POST["nama"]);
+        $valid_nama = true;
 
     }
-
-    if (empty($_POST["email"])) {
-
-        $emailErr = "Email is required";
-        $valid_email = false;
-
+    //class section
+    if (empty($_POST["kelas"])) {
+        $classErr = "Class is required";
+        $valid_class = false;
     } else {
-        $email = test_input($_POST["email"]);
-        $valid_email = true;
-        // check if e-mail address is well-formed
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-            $valid_email = false;
-
-        } else {
-            require 'connect_db.php';
-
-            $sql = 'SELECT email FROM customers';
-            $result = mysqli_query($conn, $sql);
-            if (mysqli_num_rows($result) > 0) {
-                // output data of each row
-                while ($row = mysqli_fetch_assoc($result)) {
-                    if ($row['email'] == $email) {
-                        $emailErr = "Email already exist!";
-                        $valid_email = false;
-                        break;
-                    } else {
-
-                        $valid_email = true;
-                    }
-                }
-            } else {
-                echo "0 result!";
-            }
-            mysqli_close($conn);
-        }
-    }
-
-    if (empty($_POST["password"])) {
-        $passwordErr = "Password is required";
-        $valid_password = false;
-        $valid_passwordrepeat = false;
-    } else {
-        $password = test_input($_POST["password"]);
-        if ($_POST['password'] == $_POST['repeatpassword']) {
-
-            $valid_password = true;
-            $valid_passwordrepeat = true;
-        } else {
-            $repeatpasswordErr = "Password must same";
-            $repeatpassword = test_input($_POST["repeatpassword"]);
-        }
-
+        $class1 = test_input($_POST["kelas"]);
+        $valid_class = true;
     }
 
 }
@@ -101,7 +73,6 @@ function test_input($data)
     $data = htmlspecialchars($data);
     return $data;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,7 +85,7 @@ function test_input($data)
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin Panel - Table Products</title>
+    <title>Admin Panel - Table Mahasiswa</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -132,7 +103,7 @@ function test_input($data)
 
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
 
-        <a class="navbar-brand mr-1" href="index.php">Start Bootstrap</a>
+        <a class="navbar-brand mr-1" href="index.php">PRESENSI MAHASISWA TEKNIK INFORMATIKA</a>
 
         <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
             <i class="fas fa-bars"></i>
@@ -141,7 +112,7 @@ function test_input($data)
         <!-- Navbar Search -->
         <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for..." aria-label="Search"
+                <input type="text" class="form-control" placeholder="Cari..." aria-label="Search"
                     aria-describedby="basic-addon2">
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="button">
@@ -173,7 +144,7 @@ if ($cek2 > 0) {
 
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
 
-                        <a class="dropdown-item" href='form_edit_user.php?email=<?php echo $row2['email'] ?>'>
+                        <a class="dropdown-item" href='form_update_user.php?email=<?php echo $row2['email'] ?>'>
                             <?php echo $_SESSION['role'] ?>
                         </a>
                         <?php
@@ -201,24 +172,24 @@ if ($cek2 > 0) {
 if ($_SESSION['role'] == "Admin") {
 
     ?>
-            <li class="nav-item">
+            <li class="nav-item ">
                 <a class="nav-link" href="tables.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Table Users</span></a>
-            </li>
-
-            <?php
+                <?php
 }
 ?>
-            <li class="nav-item active">
-                <a class="nav-link" href="tables-product.php">
-                    <i class="fas fa-fw fa-table"></i>
-                    <span>Table Products</span></a>
             </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="tables-mahasiswa.php">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Table Mahasiswa</span></a>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="tables-customer.php">
                     <i class="fas fa-fw fa-table"></i>
-                    <span>Table Customers</span></a>
+                    <span>Table Presensi</span></a>
             </li>
 
         </ul>
@@ -248,33 +219,35 @@ if ($_SESSION['role'] == "Admin") {
                         <div class="card-body">
 
                             <p><span class="error">* required field</span></p>
-                            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"
-                                ENCTYPE="multipart/form-data">
+                            <form method="post" ENCTYPE="multipart/form-data">
 
-                                First Name : <input type="text" name="name">
-                                <span class="error">* <?php echo $nameErr; ?></span>
+                                NIM : <input type="number" min="1" step="any" name="nim" value="<?php echo $nim; ?>"
+                                    disabled>
+                                <span class="error">* <?php echo $nimErr; ?></span>
                                 <br><br>
-                                Last Name : <input type="text" name="lname">
+                                Nama : <input type="text" name="nama" value="<?php echo $nama; ?>">
+                                <span class="error">* <?php echo $namaErr; ?></span>
+                                <br><br>
 
-                                <br><br>
-                                Email : <input type="text" name="email">
-                                <span class="error">* <?php echo $emailErr; ?></span>
-                                <br><br>
-                                <span>Password</span>
-                                <input type="password" name="password">
-                                <span>* <?php echo $passwordErr ?></span>
-                                <br><br>
-                                <span>Confirm Password</span>
-                                <input type="password" name="repeatpassword">
-                                <span>* <?php echo $repeatpasswordErr ?></span>
+                                <select class="form-select" aria-label="Default select example" name="kelas"
+                                    required="required">
+                                    <option selected>Pilih Kelas</option>
+                                    <option value="5A" <?php echo $attrKelas; ?>>5A</option>
+                                    <option value="5B" <?php echo $attrKelas; ?>>5B</option>
+
+                                </select>
+                                <span class="error">* <?php echo $classErr; ?></span>
                                 <br><br>
                                 <input type="submit" name="submit" value="Submit" class="btn btn-primary">
+
                             </form>
 
 
                             <?php
-if ($valid_fname && $valid_email && $valid_password && $valid_passwordrepeat = true) {
-    include 'upload_data_customer.php';
+if ($valid_nim && $valid_nama && $valid_class == true) {
+
+    include 'edit_data_mahasiswa.php';
+
 }
 ?>
                         </div>
@@ -286,7 +259,7 @@ if ($valid_fname && $valid_email && $valid_password && $valid_passwordrepeat = t
             <footer class="sticky-footer">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright © Rangga</span>
+                        <span>Copyright © Rangga </span>
                     </div>
                 </div>
             </footer>

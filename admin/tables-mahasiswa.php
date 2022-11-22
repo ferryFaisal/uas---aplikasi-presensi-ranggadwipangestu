@@ -201,10 +201,10 @@ if (mysqli_num_rows($result) > 0) {
 
 
                                         <td>
-                                            <a href='form_edit_product.php?id=<?php echo $row['id'] ?>'><i
+                                            <a href='form_edit_mahasiswa.php?nim=<?php echo $row['nim'] ?>'><i
                                                     class="bi bi-pen"></i></a> |
                                             <a onclick="return confirm ('Are you sure ?')"
-                                                href='delete_data_product.php?id=<?php echo $row['id'] ?>'><i
+                                                href='delete_data_mahasiswa.php?nim=<?php echo $row['nim'] ?>'><i
                                                     class="bi bi-trash"></i></a>
                                         </td>
 

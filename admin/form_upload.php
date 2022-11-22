@@ -242,7 +242,7 @@ if ($_SESSION['role'] == "Admin") {
                                     required="required">
                                     <option value="">Pilih Kelas</option>
                                     <option value="5A">5A</option>
-                                    <option selected value="5B">5B</option>
+                                    <option value="5B">5B</option>
 
                                 </select>
                                 <span class="error">* <?php echo $kelasErr; ?></span>
