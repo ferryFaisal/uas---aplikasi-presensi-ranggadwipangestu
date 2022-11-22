@@ -89,10 +89,10 @@ function test_input($data)
                                 Pilih Kelas
                                 &nbsp;
                                 &nbsp;
-                                <a class="btn btn-primary btn-block" href="index5A.php">5A</a>
+                                <a class="btn btn-primary btn-block active" href="index5A.php">5A</a>
                                 &nbsp;
 
-                                <a class="btn btn-primary btn-block active" href="index.php">5B</a>
+                                <a class="btn btn-primary btn-block " href="index.php">5B</a>
 
                             </div>
                         </div>
