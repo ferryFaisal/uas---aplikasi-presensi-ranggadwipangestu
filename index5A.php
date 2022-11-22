@@ -93,10 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 Pilih Kelas
                                 &nbsp;
                                 &nbsp;
-                                <a class="btn btn-primary btn-block" href="index5A.php">5A</a>
+
+
+
+                                <a class="btn btn-primary btn-block active" href="index5A.php">5A</a>
                                 &nbsp;
 
-                                <a class="btn btn-primary btn-block active" href="index.php">5B</a>
+                                <a class="btn btn-primary btn-block " href="index.php">5B</a>
 
                             </div>
                         </div>
@@ -110,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <hr>
                     <?php
 
-$sql = "select * from mahasiswa where kelas = '5B'";
+$sql = "select * from mahasiswa where kelas = '5A'";
 $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) > 0) {
     // output data of each row
